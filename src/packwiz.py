@@ -3,6 +3,7 @@ import os
 import subprocess
 import src.template_loader as loader
 import src.colors as colors
+from src.logger import Logger
 
 
 class Context:
@@ -38,11 +39,11 @@ class Context:
         subprocess.run(["packwiz", *args])
 
 
-def init_pack(context: Context, builder: loader.TemplateBuilder):
+def init_pack(context: Context, builder: loader.TemplateBuilder, logger: Logger):
     original_path = os.getcwd()
     os.chdir(context.path)
 
-    print((colors.CYAN + colors.BOLD)(" -> Initializing pack"))
+    logger.log("Initializing pack...")
     context.init(
         "--author",
         ", ".join(builder.template.authors),
@@ -58,11 +59,11 @@ def init_pack(context: Context, builder: loader.TemplateBuilder):
         builder.template.name,
     )
 
-    print((colors.CYAN + colors.BOLD)(" -> Adding mods..."))
+    logger.log("Adding mods...")
     for module, mods in builder.module_mods.items():
         for mod in mods:
-            print((colors.GREEN + colors.BOLD)(f" -> Adding {mod.mod}"))
+            logger.info(f" -> Adding {mod.mod}")
             context.add_entry(mod)
 
     os.chdir(original_path)
-    print((colors.CYAN + colors.BOLD)(" -> Done!"))
+    logger.info(" -> Done!")

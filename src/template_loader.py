@@ -86,16 +86,12 @@ class TemplateBuilder:
     def print(self):
         print(f"{(colors.BOLD + colors.BLUE)('Template:')} {self.template.name}")
         print(str(colors.ITALIC(self.template.desc)))
-        print(
-            f"{(colors.BOLD + colors.BLUE)('Modules:')} {', '.join(self.toggled_modules)}"
-        )
+        print(f"{(colors.BOLD + colors.BLUE)('Modules:')} {', '.join(self.toggled_modules)}")
 
     def print_mods(self, show_providers: bool = False):
         print((colors.BOLD + colors.BLUE)("Mods:"))
         for module, mods in self.module_mods.items():
-            print(
-                (colors.ITALIC + colors.BLUE)(f"  {self.template.modules[module].name}")
-            )
+            print((colors.ITALIC + colors.BLUE)(f"  {self.template.modules[module].name}"))
             for mod in mods:
                 print(
                     f"    - {mod.mod}{(' @' + (colors.GREEN)(mod.provider)) if show_providers else ''}"
@@ -115,7 +111,7 @@ class Template:
         self,
         name: str,
         desc: str,
-        authors: str,
+        author: str,
         provider: str,
         loader: str,
         loader_version: str,
@@ -125,7 +121,7 @@ class Template:
     ):
         self.name = name
         self.desc = desc
-        self.authors = authors
+        self.author = author
         self.provider = provider
         self.loader = loader
         self.loader_version = loader_version
@@ -136,22 +132,30 @@ class Template:
     def print(self):
         print(f"{(colors.BOLD + colors.BLUE)('Template:')} {self.name}")
         print(str(colors.ITALIC(self.desc)))
+        print(f"{(colors.BOLD + colors.BLUE)('Author(s):')} {self.author}")
+        print(f"{(colors.BOLD + colors.BLUE)('Version:')} {self.loader} {self.loader_version}")
+        print(f"{(colors.BOLD + colors.BLUE)('Pack Version:')} {self.pack_version}")
         print(f"{(colors.BOLD + colors.BLUE)('Modules:')} {', '.join(self.modules)}")
 
-    def build(self) -> TemplateBuilder:
+    def build(self, pick_modules=True, modules: list[str] | None = None) -> TemplateBuilder:
         self.print()
         builder = TemplateBuilder(self)
-        keys = list(self.modules.keys())
-        menu = stm.TerminalMenu(
-            keys,
-            multi_select=True,
-            show_multi_select_hint=True,
-            clear_menu_on_exit=True,
-            multi_select_empty_ok=True,
-            multi_select_select_on_accept=False,
-        )
-        picks = menu.show()
-        builder.toggled_modules = menu.chosen_menu_entries
+
+        if pick_modules:
+            keys = list(self.modules.keys())
+            menu = stm.TerminalMenu(
+                keys,
+                multi_select=True,
+                show_multi_select_hint=True,
+                clear_menu_on_exit=True,
+                multi_select_empty_ok=True,
+                multi_select_select_on_accept=False,
+            )
+            picks = menu.show()
+            builder.toggled_modules = menu.chosen_menu_entries
+        else:
+            builder.toggled_modules = modules if modules is not None else list(self.modules.keys())
+
         return builder
 
 
@@ -168,7 +172,9 @@ def get_mod_entry(entry: dict | str | list[str], default_provider: str) -> ModEn
     raise Exception("Unknown ModEntry: " + str(entry))
 
 
-def load_template(path: str) -> Template:
+def load_template(
+    path: str, author: str | None = None, pack_version: str | None = None
+) -> Template:
     data = None
 
     with open(path, "r") as fp:
@@ -177,11 +183,8 @@ def load_template(path: str) -> Template:
     if data is None:
         raise Exception("Failed to load template: " + path)
 
-    authors = [
-        author.strip()
-        for author in input("Pack Author(s) (separate with commas): ").split(",")
-    ]
-    modpack_version = input("Modpack Version: ")
+    author = author if author is not None else input("Pack Author(s): ")
+    pack_version = pack_version if pack_version is not None else input("Pack Version: ")
     provider = data["provider"]
     modules = {}
 
@@ -192,11 +195,11 @@ def load_template(path: str) -> Template:
     return Template(
         data["name"],
         data["desc"],
-        authors,
+        author,
         provider,
         data["loader"],
         data["loader-version"],
         data["mc-version"],
-        modpack_version,
+        pack_version,
         modules,
     )

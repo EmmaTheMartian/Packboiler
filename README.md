@@ -6,6 +6,8 @@ Packboiler is a tool intended to allow modpack developers the ability to focus o
 
 Packboiler uses a template system which allows it to work regardless of Minecraft version, modloader, and modloader version. It's extremely flexible too without sacrificing ease-of-use.
 
+Packboiler can also be used simply as a tool to make building modpacks using an Hjson interface rather than managing Packwiz TOML files.
+
 ## Usage
 
 First you'll need to install [Packwiz](https://packwiz.infra.link/) and Packboiler.
