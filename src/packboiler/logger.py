@@ -1,4 +1,4 @@
-import src.colors as colors
+import packboiler.colors as colors
 
 
 class Logger:

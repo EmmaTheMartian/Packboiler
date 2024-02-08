@@ -1,9 +1,9 @@
 import sys
-import src as packboiler
-import src.template_loader as loader
-import src.packwiz as packwiz
-import src.colors as colors
-from src.logger import Logger
+import packboiler
+import packboiler.template_loader as loader
+import packboiler.packwiz as packwiz
+import packboiler.colors as colors
+from packboiler.logger import Logger
 
 
 def main():

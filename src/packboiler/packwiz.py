@@ -1,9 +1,9 @@
 # Provides utilities to manage a Packwiz pack from Python.
 import os
 import subprocess
-import src.template_loader as loader
-import src.colors as colors
-from src.logger import Logger
+import packboiler.template_loader as loader
+import packboiler.colors as colors
+from packboiler.logger import Logger
 
 
 class Context:

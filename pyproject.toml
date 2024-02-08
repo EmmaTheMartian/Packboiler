@@ -1,2 +1,20 @@
+[project]
+name = "packboiler"
+version = "1.0.0"
+authors = [
+    { name = "EmmaTheMartian" },
+]
+description = "A tool to generate Packwiz packs from templates."
+readme = "README.md"
+requires-python = ">=3.11"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+]
+
+[project.urls]
+Homepage = "https://github.com/emmathemartian/packboiler"
+Issues = "https://github.com/emmathemartian/packboiler/issues"
+
 [tool.black]
 line-length = 100

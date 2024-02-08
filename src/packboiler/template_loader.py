@@ -1,7 +1,7 @@
 from abc import ABC
 import hjson
 import simple_term_menu as stm
-import src.colors as colors
+import packboiler.colors as colors
 
 
 class BuiltModEntry:
