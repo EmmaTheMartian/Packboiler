@@ -14,39 +14,48 @@ class Context:
     def init(self, *args):
         self._packwiz("init", *args)
 
-    def add_cf(self, slug: str, version=None):
+    def add_cf(self, slug: str, version: str | None = None, yes: bool = True):
+        args = ["cf", "add", slug]
         if version is not None:
-            self._packwiz("cf", "add", slug, "--file-id", version)
-        else:
-            self._packwiz("cf", "add", slug)
+            args.extend(["--file-id", version])
+        if yes:
+            args.append("--yes")
+        self._packwiz(*args)
 
-    def add_mr(self, slug: str, version=None):
+    def add_mr(self, slug: str, version: str | None = None, yes: bool = True):
+        args = ["mr", "add", slug]
         if version is not None:
-            self._packwiz("mr", "add", slug, "--version-filename", version)
-        else:
-            self._packwiz("mr", "add", slug)
+            args.extend(["--version-filename", version])
+        if yes:
+            args.append("--yes")
+        self._packwiz(*args)
 
-    def add_url(self, path: str, force=False):
+    def add_url(self, path: str, force: bool = False, yes: bool = True):
+        args = ["url", "add", path]
         if force:
-            self._packwiz("url", "add", path, "--force")
-        else:
-            self._packwiz("url", "add", path)
+            args.append("--force")
+        if yes:
+            args.append("--yes")
+        self._packwiz(*args)
 
-    def add_entry(self, entry: loader.BuiltModEntry):
-        self._packwiz(entry.provider, "add", entry.mod)
+    def add_entry(self, entry: loader.BuiltModEntry, yes: bool = True):
+        args = [entry.provider, "add", entry.mod]
+        if yes:
+            args.append("--yes")
+        self._packwiz(*args)
 
     def _packwiz(self, *args):
         subprocess.run(["packwiz", *args])
 
 
-def init_pack(context: Context, builder: loader.TemplateBuilder, logger: Logger):
+def init_pack(context: Context, builder: loader.TemplateBuilder, logger: Logger, yes: bool = True):
     original_path = os.getcwd()
     os.chdir(context.path)
 
-    logger.log("Initializing pack...")
+    logger.info("Initializing pack...")
     context.init(
         "--author",
-        ", ".join(builder.template.authors),
+        builder.template.author,
         "--modloader",
         builder.template.loader,
         f"--{builder.template.loader}-version",
@@ -59,11 +68,11 @@ def init_pack(context: Context, builder: loader.TemplateBuilder, logger: Logger)
         builder.template.name,
     )
 
-    logger.log("Adding mods...")
+    logger.info("Adding mods...")
     for module, mods in builder.module_mods.items():
         for mod in mods:
             logger.info(f" -> Adding {mod.mod}")
-            context.add_entry(mod)
+            context.add_entry(mod, yes)
 
     os.chdir(original_path)
     logger.info(" -> Done!")
