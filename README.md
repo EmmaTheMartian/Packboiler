@@ -64,7 +64,7 @@ Now you can make your first template.
 
 1. Create a file ending with `.hjson`
 2. Add the following to the file:
-    ```json
+    ```
     {
         name: Example Template
         desc: My first Packboiler template!
@@ -77,7 +77,7 @@ Now you can make your first template.
 
     > Note that this is just an example, feel free to change the provider, loader, versions, names, etc.
 3. Start adding some modules, these are togglable parts of your template. You can have multiple or a single one.
-    ```json
+    ```
     {
         ...
         modules: {
