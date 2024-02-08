@@ -1,0 +1,171 @@
+{
+    name: Forge 1.20.1
+    desc: Forge 1.20.1 template
+    provider: modrinth
+    loader: forge
+    loader-version: 47.2.20
+    mc-version: 1.20.1
+    modules: {
+        performance: {
+            name: Performance
+            desc: Mostly non-invasive mods to improve performance
+            mods: [
+                embeddium
+                textrues-embeddium-options
+                modernfix
+                entityculling
+                ferrite-core
+                memoryleakfix
+                immediatelyfast
+                servercore
+                alternate-current
+                fps-reducer
+                smooth-boot-reloaded
+                saturn
+                fast-paintings
+                badoptimizations
+                ai-improvements
+                achievements-optimizer
+                clumps
+            ]
+        }
+
+        performance-aggressive: {
+            name: Performance (Aggressive)
+            desc: Mods to improve performance, these may break other mods.
+            mods: [
+                adaptive-performance-tweaks
+                exordium
+            ]
+        }
+
+        tweaks: {
+            name: Tweaks
+            desc: General quality-of-life tweaks to gameplay. Absolutely no content is added by any of these mods.
+            mods: [
+                mouse-tweaks
+                inventory-essentials
+                appleskin
+                double-doors
+                visual-workbench
+                carry-on
+                crafting-tweaks
+                overflowing-bars
+                lootr
+                yeetus-experimentus
+                trashslot
+            ]
+        }
+
+        bugfixes: {
+            name: Bug Fixes
+            desc: General fixes to common bugs in Minecraft.
+            mods: [
+                modelfix
+                attributefix
+                raised
+            ]
+        }
+
+        multiplayer: {
+            name: Multiplayer
+            desc: Mods that are useful for multiplayer.
+            mods: [
+                {
+                    type: pick
+                    desc: Serverless Multiplayer
+                    mods: [
+                        essential
+                        e4mc
+                        world-host
+                    ]
+                }
+                {
+                    type: pick
+                    desc: Voice Chat
+                    mods: [
+                        simple-voice-chat
+                        plasmo-voice
+                    ]
+                }
+                {
+                    type: pick
+                    desc: Discord Integration
+                    mods: [
+                        craftpresence
+                        srdp
+                        dcintegration
+                    ]
+                }
+                no-chat-reports
+                chat-heads
+                longer-chat-history
+                ping-wheel
+                emojiful
+                serversleep
+                chatnotify
+            ]
+        }
+
+        extras: {
+            name: Extras
+            desc: Extra QoL mods that are a bit less essential
+            mods: [
+                {
+                    type: pick
+                    desc: Recipe Browser
+                    mods: [
+                        jei
+                        emi
+                        rei
+                    ]
+                }
+                {
+                    type: pick
+                    desc: Maps
+                    mods: [
+                        journeymap
+                        xaeros-minimap
+                        xaeros-world-map
+                    ]
+                }
+                {
+                    type: pick
+                    desc: WAILA Forks
+                    mods: [
+                        jade
+                        jade-addons-forge
+                        wthit
+                        wthit-harvestability
+                    ]
+                }
+                oculus
+                nerb
+                observable
+                legendary-tooltips
+            ]
+        }
+
+        extras-packdev: {
+            name: Extras (Packdev)
+            desc: Extra mods that are useful in modpack development.
+            mods: [
+                kubejs
+                fancymenu
+                mods-optimizer
+            ]
+        }
+
+        extras-emmas-picks: {
+            name: Extras (Emma's Picks)
+            desc: Extra mods that aren't as common but still really cool.
+            mods: [
+                item-highlighter
+                pick-up-notifier
+                extrasoundsforge
+                tiny-item-animations
+                fastentitytransfer
+            ]
+        }
+    }
+}

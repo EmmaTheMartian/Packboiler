@@ -1,0 +1,6 @@
+# Python
+env/
+**/__pycache__
+
+# Packboiler
+output/
