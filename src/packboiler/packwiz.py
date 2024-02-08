@@ -69,10 +69,11 @@ def init_pack(context: Context, builder: loader.TemplateBuilder, logger: Logger,
     )
 
     logger.info("Adding mods...")
+    logger_adding = logger.make_child()
     for module, mods in builder.module_mods.items():
         for mod in mods:
-            logger.info(f" -> Adding {mod.mod}")
+            logger_adding.info(f"Adding {mod.mod}")
             context.add_entry(mod, yes)
 
     os.chdir(original_path)
-    logger.info(" -> Done!")
+    logger.info("Done!")

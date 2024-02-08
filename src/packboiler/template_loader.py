@@ -45,35 +45,51 @@ class ModEntryList(ModEntry):
 
 
 class ModEntryPickMod(ModEntry):
-    def __init__(self, entries: ModEntryList, desc: str):
+    def __init__(self, entries: ModEntryList, desc: str, id: str):
         super().__init__(ModEntry.TYPE_PICK_MOD)
         self.entries = entries
         self.desc = desc
+        self.id = id
 
-    def build(self) -> list[BuiltModEntry]:
-        menu = stm.TerminalMenu(
-            [entry.mod for entry in self.entries.mods],
-            title=self.desc,
-            multi_select=True,
-            show_multi_select_hint=True,
-            clear_menu_on_exit=True,
-            multi_select_empty_ok=True,
-            multi_select_select_on_accept=False,
-        )
-        selection = menu.show()
-        if selection is None:
-            return []
+    def build(self, pick: list[str] | None = None) -> list[BuiltModEntry]:
+        mod_names = [entry.mod for entry in self.entries.mods]
+        selection = []
+        if pick is None:
+            menu = stm.TerminalMenu(
+                mod_names,
+                title=self.desc,
+                multi_select=True,
+                show_multi_select_hint=True,
+                clear_menu_on_exit=True,
+                multi_select_empty_ok=True,
+                multi_select_select_on_accept=False,
+            )
+            selection = menu.show()
+            if selection is None:
+                return []
+        else:
+            selection = [mod_names.index(p) for p in pick]
+
         return [self.entries.mods[selected].build() for selected in selection]
 
 
 class Module:
-    def __init__(self, name: str, desc: str, mods: list[ModEntry]):
+    def __init__(
+        self, name: str, desc: str, mods: list[ModEntry], pick: dict[str, list[str]] | None = None
+    ):
         self.name = name
         self.desc = desc
         self.mods = mods
+        self.pick = pick
 
     def build_entries(self) -> list[ModEntry]:
-        return [entry.build() for entry in self.mods]
+        built = []
+        for entry in self.mods:
+            if self.pick is not None and type(entry) is ModEntryPickMod and entry.id in self.pick:
+                built.append(entry.build(self.pick[entry.id]))
+            else:
+                built.append(entry.build())
+        return built
 
 
 class TemplateBuilder:
@@ -117,7 +133,7 @@ class Template:
         loader_version: str,
         mc_version: str,
         pack_version: str,
-        modules: list[Module],
+        modules: dict[str, Module],
     ):
         self.name = name
         self.desc = desc
@@ -151,7 +167,7 @@ class Template:
                 multi_select_empty_ok=True,
                 multi_select_select_on_accept=False,
             )
-            picks = menu.show()
+            pick = menu.show()
             builder.toggled_modules = menu.chosen_menu_entries
         else:
             builder.toggled_modules = modules if modules is not None else list(self.modules.keys())
@@ -167,9 +183,39 @@ def get_mod_entry(entry: dict | str | list[str], default_provider: str) -> ModEn
 
     # Assume type is dict
     if entry["type"] == "pick":
-        return ModEntryPickMod(get_mod_entry(entry["mods"], default_provider), entry["desc"])
+        return ModEntryPickMod(
+            get_mod_entry(entry["mods"], default_provider), entry["desc"], entry["id"]
+        )
 
     raise Exception("Unknown ModEntry: " + str(entry))
+
+
+def module_from_data(id: str, data: dict, template: Template) -> Module:
+    name = None
+    desc = None
+    mods = None
+    pick = None
+
+    # Importing from another module
+    if "from" in data:
+        # TODO: Cache these templates so we do not need to load the template with every single module imported from it.
+        module = load_template(data["from"], template.author, template.pack_version).modules[id]
+        name = module.name
+        desc = module.desc
+        mods = module.mods
+        pick = module.pick
+
+    # Override values if able
+    name = name if "name" not in data else data["name"]
+    desc = desc if "desc" not in data else data["name"]
+    mods = (
+        mods
+        if "mods" not in data
+        else [get_mod_entry(mod, template.provider) for mod in data["mods"]]
+    )
+    pick = pick if "pick" not in data else data["pick"]
+
+    return Module(name, desc, mods, pick)
 
 
 def load_template(
@@ -186,13 +232,7 @@ def load_template(
     author = author if author is not None else input("Pack Author(s): ")
     pack_version = pack_version if pack_version is not None else input("Pack Version: ")
     provider = data["provider"]
-    modules = {}
-
-    for module, module_data in data["modules"].items():
-        mods = [get_mod_entry(mod, provider) for mod in module_data["mods"]]
-        modules[module] = Module(module_data["name"], module_data["desc"], mods)
-
-    return Template(
+    template = Template(
         data["name"],
         data["desc"],
         author,
@@ -201,5 +241,14 @@ def load_template(
         data["loader-version"],
         data["mc-version"],
         pack_version,
-        modules,
+        {},
     )
+
+    for module, module_data in data["modules"].items():
+        template.modules[module] = module_from_data(
+            module,
+            module_data,
+            template,
+        )
+
+    return template

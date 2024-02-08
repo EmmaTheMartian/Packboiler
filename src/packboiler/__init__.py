@@ -1,17 +1,16 @@
 import sys
 
 
-HELP_MESSAGE = """help:
-usage: packboiler --template (TEMPLATE PATH)
+HELP_MESSAGE = """usage: packboiler [-tmMAVydh]
 flags:
-  -t --template path        Pass a template to use. Required.
-  -m --modules modules      Pass a comma-separated list of modules to toggle.
+  -t --template PATH        Path to a template to use. This is a required argument
+  -m --modules MODULES      Comma-separated list of modules to enable
   -M --all-modules          Enable all modules
-  -A --author               Skip confirmation to init a Packwiz pack.
-  -V --pack-version         Skip confirmation to init a Packwiz pack.
-  -y --yes-packwiz          Skip confirmation to init a Packwiz pack.
+  -A --author               Specify the author(s) of the modpack
+  -V --pack-version         Specify the modpack version
+  -y --yes-packwiz          Skip confirmation to init a Packwiz pack
   -d --debug                Enable debug logging
-  -h --help                 This message."""
+  -h --help                 Shows this message"""
 
 arg_options = {
     "template": None,
