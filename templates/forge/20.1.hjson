@@ -29,6 +29,16 @@
                 ai-improvements
                 achievements-optimizer
                 clumps
+                {
+                    type: pick
+                    id: embeddium-addons
+                    desc: Embeddium Addons
+                    mods: [
+                        { name: "embeddiumplus", provider: "curseforge" }
+                        { name: "magnesium-extras", provider: "curseforge" }
+                        { name: "dynamiclights-reforged", provider: "curseforge" }
+                    ]
+                }
             ]
         }
 

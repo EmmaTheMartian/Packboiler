@@ -1,16 +1,16 @@
 from abc import ABC
+import collections
 import hjson
 import simple_term_menu as stm
 import packboiler.colors as colors
+from packboiler.logger import Logger
 
 
 class BuiltModEntry:
-    def __init__(self, mod: str, provider: str):
+    def __init__(self, mod: str, provider: str, display_name: str | None = None):
         self.mod = mod
         self.provider = provider
-
-    def add(self):
-        pass
+        self.display_name = self.mod if display_name is None else display_name
 
 
 class ModEntry(ABC):
@@ -26,13 +26,14 @@ class ModEntry(ABC):
 
 
 class ModEntrySingleMod(ModEntry):
-    def __init__(self, mod: str, provider: str):
+    def __init__(self, mod: str, provider: str, display_name: str | None = None):
         super().__init__(ModEntry.TYPE_SINGLE_MOD)
         self.mod = mod
         self.provider = provider
+        self.display_name = self.mod if display_name is None else display_name
 
     def build(self) -> BuiltModEntry:
-        return BuiltModEntry(self.mod, self.provider)
+        return BuiltModEntry(self.mod, self.provider, self.display_name)
 
 
 class ModEntryList(ModEntry):
@@ -52,7 +53,7 @@ class ModEntryPickMod(ModEntry):
         self.id = id
 
     def build(self, pick: list[str] | None = None) -> list[BuiltModEntry]:
-        mod_names = [entry.mod for entry in self.entries.mods]
+        mod_names = [entry.display_name for entry in self.entries.mods]
         selection = []
         if pick is None:
             menu = stm.TerminalMenu(
@@ -99,19 +100,26 @@ class TemplateBuilder:
         # All mods in this pack, organized by module
         self.module_mods = {}
 
-    def print(self):
-        print(f"{(colors.BOLD + colors.BLUE)('Template:')} {self.template.name}")
-        print(str(colors.ITALIC(self.template.desc)))
-        print(f"{(colors.BOLD + colors.BLUE)('Modules:')} {', '.join(self.toggled_modules)}")
+    def print(self, logger: Logger):
+        c = colors.BLUE + colors.BOLD
+        logger.info(f"{c}Template:{colors.RESET} {self.template.name}")
+        logger.info(f"{c}Description:{colors.RESET} {colors.ITALIC(self.template.desc)}")
+        logger.info(f"{c}Modules:{colors.RESET} {', '.join(self.toggled_modules)}")
 
-    def print_mods(self, show_providers: bool = False):
-        print((colors.BOLD + colors.BLUE)("Mods:"))
+    def print_mods(self, logger: Logger, show_providers: bool = False, show_ids: bool = False):
+        logger.info("Mods:")
+        child = logger.make_child()
         for module, mods in self.module_mods.items():
-            print((colors.ITALIC + colors.BLUE)(f"  {self.template.modules[module].name}"))
+            child.info((colors.WHITE + colors.ITALIC)(self.template.modules[module].name))
+            module_child = child.make_child()
             for mod in mods:
-                print(
-                    f"    - {mod.mod}{(' @' + (colors.GREEN)(mod.provider)) if show_providers else ''}"
-                )
+                text = colors.WHITE(mod.display_name)
+                if show_providers:
+                    text += colors.GREEN(f" (@{mod.provider})")
+                if show_ids:
+                    text += (colors.WHITE + colors.ITALIC)(f" (id: {mod.mod})")
+
+                module_child.info(text)
 
     def build_modules(self):
         for module in self.toggled_modules:
@@ -145,16 +153,19 @@ class Template:
         self.pack_version = pack_version
         self.modules = modules
 
-    def print(self):
-        print(f"{(colors.BOLD + colors.BLUE)('Template:')} {self.name}")
-        print(str(colors.ITALIC(self.desc)))
-        print(f"{(colors.BOLD + colors.BLUE)('Author(s):')} {self.author}")
-        print(f"{(colors.BOLD + colors.BLUE)('Version:')} {self.loader} {self.loader_version}")
-        print(f"{(colors.BOLD + colors.BLUE)('Pack Version:')} {self.pack_version}")
-        print(f"{(colors.BOLD + colors.BLUE)('Modules:')} {', '.join(self.modules)}")
+    def print(self, logger: Logger):
+        c = colors.BOLD + colors.BLUE
+        logger.info(f"{c}Template:{colors.RESET} {self.name}")
+        logger.info(f"{c}Description:{colors.RESET} {colors.ITALIC(self.desc)}")
+        logger.info(f"{c}Author(s):{colors.RESET} {self.author}")
+        logger.info(f"{c}Version:{colors.RESET} {self.loader} {self.loader_version}")
+        logger.info(f"{c}Pack Version:{colors.RESET} {self.pack_version}")
+        logger.info(f"{c}Modules:{colors.RESET} {', '.join(self.modules)}")
 
-    def build(self, pick_modules=True, modules: list[str] | None = None) -> TemplateBuilder:
-        self.print()
+    def build(
+        self, logger: Logger, pick_modules=True, modules: list[str] | None = None
+    ) -> TemplateBuilder:
+        self.print(logger)
         builder = TemplateBuilder(self)
 
         if pick_modules:
@@ -175,19 +186,23 @@ class Template:
         return builder
 
 
-def get_mod_entry(entry: dict | str | list[str], default_provider: str) -> ModEntry:
+def get_mod_entry(entry: dict | str | list[str | dict], default_provider: str) -> ModEntry:
     if type(entry) is str:
         return ModEntrySingleMod(entry, default_provider)
     elif type(entry) is list:
         return ModEntryList([get_mod_entry(e, default_provider) for e in entry])
+    elif isinstance(entry, dict):
+        provider = default_provider if "provider" not in entry else entry["provider"]
+        entry_type = None if "type" not in entry else entry["type"]
 
-    # Assume type is dict
-    if entry["type"] == "pick":
-        return ModEntryPickMod(
-            get_mod_entry(entry["mods"], default_provider), entry["desc"], entry["id"]
-        )
+        if entry_type == "pick":
+            mod_list = get_mod_entry(entry["mods"], provider)
+            return ModEntryPickMod(mod_list, entry["desc"], entry["id"])
+        else:
+            display_name = None if "display-name" not in entry else entry["display-name"]
+            return ModEntrySingleMod(entry["name"], provider, display_name=display_name)
 
-    raise Exception("Unknown ModEntry: " + str(entry))
+    raise Exception(f"Invalid ModEntry: {entry} (type is {type(entry)})")
 
 
 def module_from_data(id: str, data: dict, template: Template) -> Module:

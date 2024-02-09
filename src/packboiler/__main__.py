@@ -48,13 +48,13 @@ def main():
     should_pick = (
         packboiler.arg_options["all-modules"] or packboiler.arg_options["modules"] is not None
     )
-    builder = template.build(not should_pick, packboiler.arg_options["modules"])
+    builder = template.build(logger, not should_pick, packboiler.arg_options["modules"])
     colors.clear()
 
     logger.info("Building modules...")
     builder.build_modules()
-    builder.print()
-    builder.print_mods(True)
+    builder.print(logger)
+    builder.print_mods(logger, True, packboiler.arg_options["debug"])
 
     should_continue = packboiler.arg_options["yes-packwiz"] or packboiler.prompt(
         "Continue and create Packwiz pack? [Y/n] ", {"y", "Y", "n", "N", ""}

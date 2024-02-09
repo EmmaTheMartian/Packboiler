@@ -70,9 +70,13 @@ def init_pack(context: Context, builder: loader.TemplateBuilder, logger: Logger,
 
     logger.info("Adding mods...")
     logger_adding = logger.make_child()
+    total_mods = sum([len(mods) for mods in builder.module_mods.values()])
+    progress = 0
+
     for module, mods in builder.module_mods.items():
         for mod in mods:
-            logger_adding.info(f"Adding {mod.mod}")
+            progress += 1
+            logger_adding.info(f"[{progress}/{total_mods}] Adding {mod.mod}")
             context.add_entry(mod, yes)
 
     os.chdir(original_path)
