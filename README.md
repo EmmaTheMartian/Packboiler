@@ -50,6 +50,8 @@ Naming scheme:
 
 See the [template spec](./spec/template.md) for detailed information.
 
+You can also reference one of the existing templates in the `templates` folder.
+
 ## Making a Template
 
 Making templates is quite easy, though first you'll want to know some terminology:
