@@ -1,5 +1,6 @@
 # Provides utilities to manage a Packwiz pack from Python.
 import os
+import time
 import subprocess
 import packboiler.template_loader as loader
 import packboiler.colors as colors
@@ -68,16 +69,28 @@ def init_pack(context: Context, builder: loader.TemplateBuilder, logger: Logger,
         builder.template.name,
     )
 
-    logger.info("Adding mods...")
     logger_adding = logger.make_child()
+    existing_mods = (
+        []
+        if not os.path.exists("mods")
+        else [f.removesuffix(".pw.toml") for f in os.listdir("mods/") if f.endswith(".pw.toml")]
+    )
     total_mods = sum([len(mods) for mods in builder.module_mods.values()])
     progress = 0
+
+    begin = time.time()
+    logger.info("Adding mods...")
 
     for module, mods in builder.module_mods.items():
         for mod in mods:
             progress += 1
             logger_adding.info(f"[{progress}/{total_mods}] Adding {mod.mod}")
+            if mod.mod in existing_mods:
+                logger_adding.debug(f"{mod.mod}.pw.toml exists, skipping.")
+                continue
             context.add_entry(mod, yes)
+            time.sleep(1)  # Prevent rate-limiting
 
+    end = time.time()
     os.chdir(original_path)
-    logger.info("Done!")
+    logger.info(f"Done! Took {int(end-begin)}s")
