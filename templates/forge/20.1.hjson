@@ -87,7 +87,7 @@
                 {
                     type: pick
                     id: serverless-multiplayer
-                    desc: Serverless Multiplayer
+                    desc: Serverless Multiplayer & LAN Hosting
                     mods: [
                         essential
                         e4mc
@@ -140,7 +140,7 @@
                 {
                     type: pick
                     id: maps
-                    desc: Maps
+                    desc: (Mini)maps
                     mods: [
                         journeymap
                         xaeros-minimap
@@ -149,24 +149,25 @@
                 }
                 {
                     type: pick
-                    id: waila-forks
-                    desc: WAILA Forks
+                    id: waila
+                    desc: WAILA-like mods
                     mods: [
                         jade
                         jade-addons-forge
                         wthit
                         wthit-harvestability
+                        megane-forge
+                        the-one-probe
                     ]
                 }
                 {
                     type: pick
-                    id: oculus
-                    desc: Use Oculus?
+                    id: shaders
+                    desc: Shader Support
                     mods: [
                         oculus
                     ]
                 }
-                observable
             ]
         }
 
@@ -177,6 +178,34 @@
                 rhino
                 kubejs
                 mods-optimizer
+                {
+                    type: pick
+                    id: ftb-suite
+                    desc: FTB Suite
+                    mods: [
+                        { name: "ftb-library-forge", provider: "curseforge" }
+                        { name: "ftb-quests-forge", provider: "curseforge" }
+                        { name: "ftb-xmod-compat", provider: "curseforge" }
+                        { name: "ftb-chunks-forge", provider: "curseforge" }
+                        // Excluded because ultimine isn't used in all packs that use the FTB suite
+                        // { name: "ftb-ultimine-forge", provider: "curseforge" }
+                        { name: "ftb-esentials-forge", provider: "curseforge" }
+                        { name: "ftb-backups-2", provider: "curseforge" }
+                        { name: "ftb-filter-system", provider: "curseforge" }
+                        { name: "ftb-quests-optimizer", provider: "curseforge" }
+                    ]
+                },
+                {
+                    type: pick
+                    id: terrarium-suite
+                    desc: Terrarium Suite
+                    mods: [
+                        heracles
+                        argonauts
+                        prometheus
+                        cadmus
+                    ]
+                }
             ]
         }
 

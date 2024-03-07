@@ -33,24 +33,41 @@ def main():
         exit(0)
 
     # Check if args are invalid
-    logger.debug("Provided template: " + str(packboiler.arg_options["template"]))
-    if packboiler.arg_options["template"] is None:
+    tp = packboiler.arg_options["template"]
+    logger.debug("Provided template: " + str(tp))
+    if tp is None:
         logger.error("No template provided. See packboiler --help.")
         exit(1)
 
+    # Get the template and parse the Hjson for it
     logger.info("Loading template...")
+    template_data = loader.load_template_data(tp)
+    if template_data is None:
+        raise Exception("Failed to load template: " + str(tp))
+
     template = loader.load_template(
-        packboiler.arg_options["template"],
-        packboiler.arg_options["author"],
+        template_data,
+        packboiler.arg_options["pack-author"],
         packboiler.arg_options["pack-version"],
     )
 
-    should_pick = (
+    # Determine if we should ignore the "Pick Modules" prompt
+    ignore_pick = (
         packboiler.arg_options["all-modules"] or packboiler.arg_options["modules"] is not None
     )
-    builder = template.build(logger, not should_pick, packboiler.arg_options["modules"])
+
+    # Make the template builder
+    builder = template.build(
+        logger,
+        not ignore_pick,
+        packboiler.arg_options["modules"],
+        packboiler.arg_options["ignore-automated"],
+    )
+
+    # Clear the terminal
     colors.clear()
 
+    # Build the template
     logger.info("Building modules...")
     builder.build_modules()
     builder.print(logger)

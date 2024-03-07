@@ -76,6 +76,6 @@ HI_BG_CYAN = Code("106")
 HI_BG_WHITE = Code("107")
 
 
-# Extra Utilities
+# Extra Utilities (totally not an unintended reference to the "Extra Utilities" Minecraft Mod :D)
 hr = lambda: print("-" * os.get_terminal_size().columns)
 clear = lambda: print(CLEAR.code)

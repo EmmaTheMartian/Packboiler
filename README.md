@@ -6,7 +6,7 @@ Packboiler is a tool intended to allow modpack developers the ability to focus o
 
 Packboiler uses a template system which allows it to work regardless of Minecraft version, modloader, and modloader version. It's extremely flexible too without sacrificing ease-of-use.
 
-Packboiler can also be used simply as a tool to make building modpacks using an Hjson interface rather than managing Packwiz TOML files.
+Packboiler can also be used simply as a tool to make building modpacks using an Hjson interface rather than managing Packwiz TOML files. This is a little bit menial, but it can be really useful once you have it all set up.
 
 ## Installation
 
@@ -26,7 +26,7 @@ python3 -m pip install ./dist/packboiler-VERSION-py3-none-any.whl
 alias packboiler="python3 -m packboiler"
 ```
 
-## Usage
+## Usage (For Nerds)
 
 ```
 help:
@@ -40,6 +40,8 @@ flags:
   -y --yes-packwiz          Skip confirmation to init a Packwiz pack
   -d --debug                Enable debug logging
   -h --help                 Shows this message
+
+You can pass a URL to a valid template by using `-t "@<URL>"`, where `<URL>` is a URL to a template.
 ```
 
 ## Template Specification

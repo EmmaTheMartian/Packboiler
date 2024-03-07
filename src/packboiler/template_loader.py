@@ -1,9 +1,13 @@
 from abc import ABC
 import collections
 import hjson
+import urllib.request
 import simple_term_menu as stm
 import packboiler.colors as colors
 from packboiler.logger import Logger
+
+
+DISALLOW_TEMPLATES_FROM_URL = False
 
 
 class BuiltModEntry:
@@ -141,7 +145,10 @@ class Template:
         loader_version: str,
         mc_version: str,
         pack_version: str,
+        imports: dict[str, "Template"],
         modules: dict[str, Module],
+        automated_modules: list[str],  # Modules specified by the template to be enabled
+        enable_all_modules: bool,
     ):
         self.name = name
         self.desc = desc
@@ -151,7 +158,10 @@ class Template:
         self.loader_version = loader_version
         self.mc_version = mc_version
         self.pack_version = pack_version
+        self.imports = imports
         self.modules = modules
+        self.automated_modules = [] if automated_modules is None else automated_modules
+        self.enable_all_modules = enable_all_modules
 
     def print(self, logger: Logger):
         c = colors.BOLD + colors.BLUE
@@ -160,16 +170,27 @@ class Template:
         logger.info(f"{c}Author(s):{colors.RESET} {self.author}")
         logger.info(f"{c}Version:{colors.RESET} {self.loader} {self.loader_version}")
         logger.info(f"{c}Pack Version:{colors.RESET} {self.pack_version}")
-        logger.info(f"{c}Modules:{colors.RESET} {', '.join(self.modules)}")
+        logger.info(f"{c}Imports:{colors.RESET} {', '.join(self.imports.keys())}")
+        logger.info(f"{c}Modules:{colors.RESET} {', '.join(self.modules.keys())}")
 
     def build(
-        self, logger: Logger, pick_modules=True, modules: list[str] | None = None
+        self,
+        logger: Logger,
+        pick_modules: bool = True,
+        modules: list[str] | None = None,
+        ignore_automated_modules: bool = False,
     ) -> TemplateBuilder:
         self.print(logger)
         builder = TemplateBuilder(self)
 
+        if self.enable_all_modules:
+            builder.toggled_modules = list(self.modules.keys())
+            return builder
+
         if pick_modules:
-            keys = list(self.modules.keys())
+            keys = list(
+                [module for module in self.modules.keys() if module not in self.automated_modules]
+            )
             menu = stm.TerminalMenu(
                 keys,
                 multi_select=True,
@@ -179,9 +200,12 @@ class Template:
                 multi_select_select_on_accept=False,
             )
             pick = menu.show()
-            builder.toggled_modules = menu.chosen_menu_entries
+            builder.toggled_modules = list(menu.chosen_menu_entries)
         else:
             builder.toggled_modules = modules if modules is not None else list(self.modules.keys())
+
+        if not ignore_automated_modules:
+            builder.toggled_modules += self.automated_modules
 
         return builder
 
@@ -213,8 +237,11 @@ def module_from_data(id: str, data: dict, template: Template) -> Module:
 
     # Importing from another module
     if "from" in data:
-        # TODO: Cache these templates so we do not need to load the template with every single module imported from it.
-        module = load_template(data["from"], template.author, template.pack_version).modules[id]
+        if data["from"][0] == "$":
+            module = template.imports[data["from"][1:]].modules[id]
+        else:
+            module = load_template(data["from"], template.author, template.pack_version).modules[id]
+
         name = module.name
         desc = module.desc
         mods = module.mods
@@ -233,20 +260,49 @@ def module_from_data(id: str, data: dict, template: Template) -> Module:
     return Module(name, desc, mods, pick)
 
 
-def load_template(
-    path: str, author: str | None = None, pack_version: str | None = None
-) -> Template:
+def load_template_data(path: str) -> dict:
     data = None
+    if path.startswith("@"):
+        if DISALLOW_TEMPLATES_FROM_URL:
+            raise Exception(
+                f"Attempted to load template from URL but DISALLOW_TEMPLATES_FROM_URL was True. URL: ({path})"
+            )
 
-    with open(path, "r") as fp:
-        data = hjson.load(fp)
+        with urllib.request.urlopen(path[1:]) as fp:
+            data = hjson.load(fp)
+    else:
+        with open(path) as fp:
+            data = hjson.load(fp)
+    return data
 
-    if data is None:
-        raise Exception("Failed to load template: " + path)
 
-    author = author if author is not None else input("Pack Author(s): ")
-    pack_version = pack_version if pack_version is not None else input("Pack Version: ")
+def load_template(
+    data: dict, author: str | None = None, pack_version: str | None = None
+) -> Template:
+    if author is None:
+        if "pack-author" in data:
+            author = data["pack-author"]
+        else:
+            author = input("Pack Author(s): ")
+
+    if pack_version is None:
+        if "pack-version" in data:
+            pack_version = data["pack-version"]
+        else:
+            pack_version = input("Pack Version: ")
+
     provider = data["provider"]
+
+    imports = {}
+    if "imports" in data:
+        for import_key, import_path in data["imports"].items():
+            imports[import_key] = load_template(
+                load_template_data(import_path), author, pack_version
+            )
+
+    automated_modules = None if "automated-modules" not in data else data["automated-modules"]
+    enable_all_modules = False if "enable-all-modules" not in data else data["enable-all-modules"]
+
     template = Template(
         data["name"],
         data["desc"],
@@ -256,7 +312,10 @@ def load_template(
         data["loader-version"],
         data["mc-version"],
         pack_version,
+        imports,
         {},
+        automated_modules,
+        enable_all_modules,
     )
 
     for module, module_data in data["modules"].items():

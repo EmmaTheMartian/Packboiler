@@ -1,0 +1,73 @@
+// This is an example of setting up a fully automated template
+// Basically this means that when you use this template, there will be no user-input required!
+{
+    name: Forge 1.20.1 (Automatic)
+    desc: Automatic build of Forge 1.20.1
+
+    pack-author: Emma
+    pack-version: 1.0.0
+
+    provider: modrinth
+    loader: forge
+    loader-version: 47.2.20
+    mc-version: 1.20.1
+
+    enable-all-modules: true
+
+    imports: {
+        template: @https://raw.githubusercontent.com/EmmaTheMartian/Packboiler/main/templates/forge/20.1.hjson
+    }
+
+    modules: {
+        performance: {
+            from: $template
+            pick: {
+                embeddium-addons: [ "embeddiumplus" ]
+            }
+        }
+
+        performance-aggressive: {
+            from: $template
+        }
+
+        tweaks: { from: "$template" }
+
+        bugfixes: { from: "$template" }
+
+        multiplayer: {
+            from: $template
+            pick: {
+                serverless-multiplayer: []
+                voice-chat: []
+                discord-integration: [ "craftpresence" ]
+            }
+        }
+
+        extras: {
+            from: $template
+            pick: {
+                recipe-browser: [ "jei", "emi" ]
+                maps: [ "xaeros-minimap", "xaeros-world-map" ]
+                waila: [ "jade", "jade-addons-forge" ]
+                shaders: [ "oculus" ]
+            }
+        }
+
+        extras-packdev: {
+            from: $template
+            pick: {
+                ftb-suite: []
+                terrarium-suite: [
+                    heracles
+                    argonauts
+                    prometheus
+                    cadmus
+                ]
+            }
+        }
+
+        extras-emmas-picks: {
+            from: $template
+        }
+    }
+}
