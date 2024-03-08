@@ -6,29 +6,30 @@
 - Packboiler uses Hjson, which does not support JSON schema in editors, so it will not be added unless there's another way to implement a schema (if so please let me know!).
 
 **Syntax Info:**
-- Types with a `?` are optional
+- Types with a `?` are optionals
+- Types with a `^` can have their values inherited if this module is imported
 - `enum`s have a type before them. This is the type of the values in the enum. For example, a `string enum(my, example, enum)` would have three possible values, each are `string`s
 
 ```json
 {
     // Name of the template
     name: string
-    // Description of the template
-    desc: string
+    // Description of the template. Defaults to ""
+    desc: string?
 
     // The author(s) of the pack for the Packwiz output
-    author: string?
+    pack-author: string?
     // The version of the pack for the Packwiz output
     pack-version: string?
 
     // Default provider to use
-    provider: string enum(modrinth, curseforge, url)
+    provider: string enum(modrinth, curseforge, url)^
     // Mod loader to use
-    loader: string enum(forge, fabric, neoforge, quilt)
+    loader: string enum(forge, fabric, neoforge, quilt)^
     // Version of the mod loader to use
-    loader-version: string
+    loader-version: string^
     // Minecraft version to use
-    mc-version: string
+    mc-version: string^
 
     // Any modules that should be enabled automatically
     automated-modules: string[]?
@@ -64,7 +65,7 @@
             // Where to import this module from
             from: string?
         }
-    }
+    }?
 }
 
 // When Mod is a `string` then it refers just to a slug for the default provider.

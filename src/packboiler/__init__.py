@@ -1,14 +1,12 @@
 import sys
 
 
-HELP_MESSAGE = """usage: packboiler [-tmMIAVydh]
+HELP_MESSAGE = """usage: packboiler [-tmMIydh]
 flags:
   -t --template PATH        Path to a template to use. This is a required argument
   -m --modules MODULES      Comma-separated list of modules to enable
   -M --all-modules          Enable all modules
   -I --ignore-automated     Ignores all automated modules specified by the template
-  -A --pack-author          Specify the author(s) of the Packwiz modpack. If provided, overrides the value in the template if it exists.
-  -V --pack-version         Specify the Packwiz modpack version. If provided, overrides the value in the template if it exists.
   -y --yes-packwiz          Skip confirmation to init a Packwiz pack
   -d --debug                Enable debug logging
   -h --help                 Shows this message
@@ -19,24 +17,20 @@ arg_options = {
     "template": None,
     "modules": None,
     "all-modules": False,
-    "pack-author": None,
-    "pack-version": None,
+    "ignore-automated": False,
     "yes-packwiz": False,
     "debug": False,
     "help": False,
-    "ignore-automated": False,
 }
 
 SHORTHANDS = {
     "t": "template",
     "m": "modules",
     "M": "all-modules",
-    "A": "pack-author",
-    "V": "pack-version",
+    "I": "ignore-automated",
     "y": "yes-packwiz",
     "d": "debug",
     "h": "help",
-    "I": "ignore-automated",
 }
 
 
@@ -64,13 +58,13 @@ def parse_arg(arg: str, index: int) -> bool | None:
         return res
 
     arg = arg[2:]  # Strip the --
-    if arg in {"template", "author", "pack-version"}:
+    if arg == "template":
         arg_options[arg] = sys.argv[index + 1]
         return True
     elif arg == "modules":
         arg_options["modules"] = sys.argv[index + 1].split(",")
         return True
-    elif arg in {"all-modules", "yes-packwiz", "debug", "help", "ignore-automated"}:
+    elif arg in {"all-modules", "ignore-automated", "yes-packwiz", "debug", "help"}:
         arg_options[arg] = True
         return False
 

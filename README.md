@@ -29,14 +29,12 @@ alias packboiler="python3 -m packboiler"
 ## Usage (For Nerds)
 
 ```
-help:
-usage: packboiler [-tmMIAVydh]
+usage: packboiler [-tmMIydh]
 flags:
   -t --template PATH        Path to a template to use. This is a required argument
   -m --modules MODULES      Comma-separated list of modules to enable
   -M --all-modules          Enable all modules
-  -A --author               Specify the author(s) of the modpack
-  -V --pack-version         Specify the modpack version
+  -I --ignore-automated     Ignores all automated modules specified by the template
   -y --yes-packwiz          Skip confirmation to init a Packwiz pack
   -d --debug                Enable debug logging
   -h --help                 Shows this message

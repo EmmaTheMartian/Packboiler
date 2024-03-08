@@ -5,6 +5,7 @@ import urllib.request
 import simple_term_menu as stm
 import packboiler.colors as colors
 from packboiler.logger import Logger
+from typing import Any
 
 
 DISALLOW_TEMPLATES_FROM_URL = False
@@ -137,6 +138,7 @@ class TemplateBuilder:
 class Template:
     def __init__(
         self,
+        json: dict,
         name: str,
         desc: str,
         author: str,
@@ -145,11 +147,10 @@ class Template:
         loader_version: str,
         mc_version: str,
         pack_version: str,
-        imports: dict[str, "Template"],
-        modules: dict[str, Module],
         automated_modules: list[str],  # Modules specified by the template to be enabled
         enable_all_modules: bool,
     ):
+        self.json = json
         self.name = name
         self.desc = desc
         self.author = author
@@ -158,10 +159,10 @@ class Template:
         self.loader_version = loader_version
         self.mc_version = mc_version
         self.pack_version = pack_version
-        self.imports = imports
-        self.modules = modules
         self.automated_modules = [] if automated_modules is None else automated_modules
         self.enable_all_modules = enable_all_modules
+        self.imports = {}
+        self.modules = {}
 
     def print(self, logger: Logger):
         c = colors.BOLD + colors.BLUE
@@ -277,52 +278,43 @@ def load_template_data(path: str) -> dict:
 
 
 def load_template(
-    data: dict, author: str | None = None, pack_version: str | None = None
+    data: dict,
+    parent_template: Template = None,
 ) -> Template:
-    if author is None:
-        if "pack-author" in data:
-            author = data["pack-author"]
-        else:
-            author = input("Pack Author(s): ")
+    def get_inherited_param(param: str) -> Any:
+        if param in data:
+            return data[param]
+        elif parent_template is not None and param in parent_template.json:
+            return parent_template.json[param]
+        return None
 
-    if pack_version is None:
-        if "pack-version" in data:
-            pack_version = data["pack-version"]
-        else:
-            pack_version = input("Pack Version: ")
-
-    provider = data["provider"]
-
-    imports = {}
-    if "imports" in data:
-        for import_key, import_path in data["imports"].items():
-            imports[import_key] = load_template(
-                load_template_data(import_path), author, pack_version
-            )
-
-    automated_modules = None if "automated-modules" not in data else data["automated-modules"]
-    enable_all_modules = False if "enable-all-modules" not in data else data["enable-all-modules"]
+    def get_optional_param(param: str, default: Any) -> Any:
+        return default if param not in data else data[param]
 
     template = Template(
+        data,
         data["name"],
-        data["desc"],
-        author,
-        provider,
-        data["loader"],
-        data["loader-version"],
-        data["mc-version"],
-        pack_version,
-        imports,
-        {},
-        automated_modules,
-        enable_all_modules,
+        get_optional_param("desc", ""),
+        get_inherited_param("pack-author"),
+        get_inherited_param("provider"),
+        get_inherited_param("loader"),
+        get_inherited_param("loader-version"),
+        get_inherited_param("mc-version"),
+        get_inherited_param("pack-version"),
+        get_optional_param("automated-modules", None),
+        get_optional_param("enable-all-modules", False),
     )
 
-    for module, module_data in data["modules"].items():
-        template.modules[module] = module_from_data(
-            module,
-            module_data,
-            template,
-        )
+    if "imports" in data:
+        for import_key, import_path in data["imports"].items():
+            template.imports[import_key] = load_template(load_template_data(import_path), template)
+
+    if "modules" in data:
+        for module, module_data in data["modules"].items():
+            template.modules[module] = module_from_data(
+                module,
+                module_data,
+                template,
+            )
 
     return template

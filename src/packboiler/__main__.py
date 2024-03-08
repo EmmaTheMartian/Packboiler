@@ -45,11 +45,7 @@ def main():
     if template_data is None:
         raise Exception("Failed to load template: " + str(tp))
 
-    template = loader.load_template(
-        template_data,
-        packboiler.arg_options["pack-author"],
-        packboiler.arg_options["pack-version"],
-    )
+    template = loader.load_template(template_data)
 
     # Determine if we should ignore the "Pick Modules" prompt
     ignore_pick = (
