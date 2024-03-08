@@ -1,7 +1,7 @@
 import sys
 
 
-HELP_MESSAGE = """usage: packboiler [-tmMAVydh]
+HELP_MESSAGE = """usage: packboiler [-tmMIAVydh]
 flags:
   -t --template PATH        Path to a template to use. This is a required argument
   -m --modules MODULES      Comma-separated list of modules to enable
@@ -11,7 +11,9 @@ flags:
   -V --pack-version         Specify the Packwiz modpack version. If provided, overrides the value in the template if it exists.
   -y --yes-packwiz          Skip confirmation to init a Packwiz pack
   -d --debug                Enable debug logging
-  -h --help                 Shows this message"""
+  -h --help                 Shows this message
+
+You can pass a URL to a valid template by using `-t "@<URL>"`, where `<URL>` is a URL to a template."""
 
 arg_options = {
     "template": None,

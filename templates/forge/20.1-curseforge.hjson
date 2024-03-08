@@ -1,0 +1,224 @@
+{
+    name: Forge 1.20.1
+    desc: Forge 1.20.1 template
+
+    provider: curseforge
+    loader: forge
+    loader-version: 47.2.20
+    mc-version: 1.20.1
+
+    modules: {
+        performance: {
+            name: Performance
+            desc: Mostly non-invasive mods to improve performance
+            mods: [
+                embeddium
+                textrues-embeddium-options
+                modernfix
+                entityculling
+                ferrite-core
+                // memoryleakfix - Not available on CurseForge
+                immediatelyfast
+                servercore
+                alternate-current
+                fps-reducer
+                smooth-boot-reloaded
+                saturn
+                fast-paintings
+                badoptimizations
+                ai-improvements
+                achievements-optimizer
+                clumps
+                {
+                    type: pick
+                    id: embeddium-addons
+                    desc: Embeddium Addons
+                    mods: [
+                        embeddiumplus
+                        magnesium-extras
+                        dynamiclights-reforged
+                    ]
+                }
+            ]
+        }
+
+        performance-aggressive: {
+            name: Performance (Aggressive)
+            desc: Mods to improve performance, these may break other mods.
+            mods: [
+                adaptive-performance-tweaks
+                exordium
+            ]
+        }
+
+        tweaks: {
+            name: Tweaks
+            desc: General quality-of-life tweaks to gameplay. Absolutely no content is added by any of these mods.
+            mods: [
+                mouse-tweaks
+                inventory-essentials
+                appleskin
+                double-doors
+                visual-workbench
+                carry-on
+                crafting-tweaks
+                overflowing-bars
+                lootr
+                yeetus-experimentus
+                trashslot
+                nerb
+            ]
+        }
+
+        bugfixes: {
+            name: Bug Fixes
+            desc: General fixes to common bugs in Minecraft.
+            mods: [
+                modelfix
+                attributefix
+                raised
+            ]
+        }
+
+        multiplayer: {
+            name: Multiplayer
+            desc: Mods that are useful for multiplayer.
+            mods: [
+                {
+                    type: pick
+                    id: serverless-multiplayer
+                    desc: Serverless Multiplayer & LAN Hosting
+                    mods: [
+                        essential
+                        e4mc
+                        world-host
+                    ]
+                }
+                {
+                    type: pick
+                    id: voice-chat
+                    desc: Voice Chat
+                    mods: [
+                        simple-voice-chat
+                        plasmo-voice
+                    ]
+                }
+                {
+                    type: pick
+                    id: discord-integration
+                    desc: Discord Integration
+                    mods: [
+                        craftpresence
+                        srdp
+                        dcintegration
+                    ]
+                }
+                no-chat-reports
+                chat-heads
+                longer-chat-history
+                ping-wheel
+                emojiful
+                serversleep
+                chatnotify
+            ]
+        }
+
+        extras: {
+            name: Extras
+            desc: Extra QoL mods that are a bit less essential
+            mods: [
+                {
+                    type: pick
+                    id: recipe-browser
+                    desc: Recipe Browser
+                    mods: [
+                        jei
+                        emi
+                        rei
+                    ]
+                }
+                {
+                    type: pick
+                    id: maps
+                    desc: (Mini)maps
+                    mods: [
+                        journeymap
+                        xaeros-minimap
+                        xaeros-world-map
+                    ]
+                }
+                {
+                    type: pick
+                    id: waila
+                    desc: WAILA-like mods
+                    mods: [
+                        jade
+                        jade-addons-forge
+                        wthit
+                        wthit-harvestability
+                        megane-forge
+                        the-one-probe
+                    ]
+                }
+                {
+                    type: pick
+                    id: shaders
+                    desc: Shader Support
+                    mods: [
+                        oculus
+                    ]
+                }
+            ]
+        }
+
+        extras-packdev: {
+            name: Extras (Packdev)
+            desc: Extra mods that are useful in modpack development.
+            mods: [
+                rhino
+                kubejs
+                mods-optimizer
+                {
+                    type: pick
+                    id: ftb-suite
+                    desc: FTB Suite
+                    mods: [
+                        ftb-library-forge
+                        ftb-quests-forge
+                        ftb-xmod-compat
+                        ftb-chunks-forge
+                        // Excluded because ultimine isn't used in all packs that use the FTB suite
+                        // { name: "ftb-ultimine-forge", provider: "curseforge" }
+                        ftb-esentials-forge
+                        ftb-backups-2
+                        ftb-filter-system
+                        ftb-quests-optimizer
+                    ]
+                },
+                {
+                    type: pick
+                    id: terrarium-suite
+                    desc: Terrarium Suite
+                    mods: [
+                        heracles
+                        argonauts
+                        prometheus
+                        cadmus
+                    ]
+                }
+            ]
+        }
+
+        extras-emmas-picks: {
+            name: Extras (Emma's Picks)
+            desc: Extra mods that are not included in packs too often however are still really cool.
+            mods: [
+                item-highlighter
+                pick-up-notifier
+                extrasoundsforge
+                tiny-item-animations
+                fastentitytransfer
+            ]
+        }
+    }
+}

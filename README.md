@@ -30,7 +30,7 @@ alias packboiler="python3 -m packboiler"
 
 ```
 help:
-usage: packboiler [-tmMAVydh]
+usage: packboiler [-tmMIAVydh]
 flags:
   -t --template PATH        Path to a template to use. This is a required argument
   -m --modules MODULES      Comma-separated list of modules to enable
@@ -48,11 +48,13 @@ You can pass a URL to a valid template by using `-t "@<URL>"`, where `<URL>` is 
 
 Naming scheme:
 1. Organized into a folder corresponding to the mod loader the template is for
-1. Named according to the version it's for, excluding the `1.` of each version (Let's be honest: Minecraft 2.0 will never be released)
+1. Named according to the version it's for, excluding the `1.` of each version (Let's be honest: Minecraft 2.0 will never be released). The name should also be suffixed with the default provider.
 
 See the [template spec](./spec/template.md) for detailed information.
 
 You can also reference one of the existing templates in the `templates` folder.
+
+> Feel free to contribute and suggest modifications for templates. The best way for Packboiler's template library to grow is with the help of the community!
 
 ## Making a Template
 
