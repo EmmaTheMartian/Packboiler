@@ -12,6 +12,7 @@
             name: Performance
             desc: Mostly non-invasive mods to improve performance
             mods: [
+                // This may be changed to Xenon at some point. It depends on the performance comparisons of the two.
                 embeddium
                 textrues-embeddium-options
                 modernfix
@@ -29,14 +30,16 @@
                 ai-improvements
                 achievements-optimizer
                 clumps
+                redirector
                 {
                     type: pick
                     id: embeddium-addons
                     desc: Embeddium Addons
                     mods: [
-                        { name: "embeddiumplus", provider: "curseforge" }
-                        { name: "magnesium-extras", provider: "curseforge" }
-                        { name: "dynamiclights-reforged", provider: "curseforge" }
+                        embeddiumplus
+                        rubidium-extra
+                        // { name: "magnesium-extras", provider: "curseforge" }
+                        // { name: "dynamiclights-reforged", provider: "curseforge" }
                     ]
                 }
             ]
@@ -48,6 +51,8 @@
             mods: [
                 adaptive-performance-tweaks
                 exordium
+                // I am currently unsure of Radium's stability, so it will be here until confirmed
+                radium
             ]
         }
 
@@ -77,6 +82,10 @@
                 modelfix
                 attributefix
                 raised
+                packet-fixer
+                dimensional-sync-fixes
+                max-health-fix
+                cursorcentered-fix
             ]
         }
 
@@ -178,23 +187,6 @@
                 rhino
                 kubejs
                 mods-optimizer
-                {
-                    type: pick
-                    id: ftb-suite
-                    desc: FTB Suite
-                    mods: [
-                        { name: "ftb-library-forge", provider: "curseforge" }
-                        { name: "ftb-quests-forge", provider: "curseforge" }
-                        { name: "ftb-xmod-compat", provider: "curseforge" }
-                        { name: "ftb-chunks-forge", provider: "curseforge" }
-                        // Excluded because ultimine isn't used in all packs that use the FTB suite
-                        // { name: "ftb-ultimine-forge", provider: "curseforge" }
-                        { name: "ftb-esentials-forge", provider: "curseforge" }
-                        { name: "ftb-backups-2", provider: "curseforge" }
-                        { name: "ftb-filter-system", provider: "curseforge" }
-                        { name: "ftb-quests-optimizer", provider: "curseforge" }
-                    ]
-                },
                 {
                     type: pick
                     id: terrarium-suite

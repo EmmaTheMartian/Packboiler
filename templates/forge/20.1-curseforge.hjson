@@ -12,6 +12,7 @@
             name: Performance
             desc: Mostly non-invasive mods to improve performance
             mods: [
+                // This may be changed to Xenon at some point. It depends on the performance comparisons of the two.
                 embeddium
                 textrues-embeddium-options
                 modernfix
@@ -29,12 +30,14 @@
                 ai-improvements
                 achievements-optimizer
                 clumps
+                redirector
                 {
                     type: pick
                     id: embeddium-addons
                     desc: Embeddium Addons
                     mods: [
                         embeddiumplus
+                        rubidium-extra
                         magnesium-extras
                         dynamiclights-reforged
                     ]
@@ -48,6 +51,8 @@
             mods: [
                 adaptive-performance-tweaks
                 exordium
+                // I am currently unsure of Radium's stability, so it will be here until confirmed
+                radium-reforged
             ]
         }
 
@@ -77,6 +82,10 @@
                 modelfix
                 attributefix
                 raised
+                packet-fixer
+                dimensional-sync-fixes
+                max-health-fix
+                cursorcentered-fix
             ]
         }
 
@@ -188,7 +197,7 @@
                         ftb-xmod-compat
                         ftb-chunks-forge
                         // Excluded because ultimine isn't used in all packs that use the FTB suite
-                        // { name: "ftb-ultimine-forge", provider: "curseforge" }
+                        // ftb-ultimine-forge
                         ftb-esentials-forge
                         ftb-backups-2
                         ftb-filter-system
